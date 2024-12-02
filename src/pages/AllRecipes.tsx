@@ -11,6 +11,7 @@ const AllRecipesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; 
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
 
   const { data: recipes, isLoading, isError } = useQuery<Recipe[]>({
@@ -49,11 +50,11 @@ const AllRecipesPage = () => {
         {displayedRecipes.map((recipe) => (
           <RecipeCard
             key={recipe.idMeal}
-            id={recipe.idMeal}
-            name={recipe.strMeal}
-            category={recipe.strCategory || "Unknown"}
-            area={recipe.strArea || "Unknown"}
-            image={recipe.strMealThumb}
+            idMeal={recipe.idMeal}
+            strMeal={recipe.strMeal}
+            strCategory={recipe.strCategory || "Unknown"}
+            strArea={recipe.strArea || "Unknown"}
+            strMealThumb={recipe.strMealThumb}
           />
         ))}
       </div>

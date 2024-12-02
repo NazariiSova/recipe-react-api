@@ -3,12 +3,14 @@ export interface Recipe {
     strMeal: string;
     strCategory: string;
     strArea: string;
+    strInstructions: string;
     strMealThumb: string;
-    strInstructions?: string; 
-    strYoutube?: string | null;
-    isSelected?: boolean;
-    [key: string]: string | null | boolean | undefined;
+    strTags?: string;
+    strYoutube?: string;
+    [key: `strIngredient${number}`]: string | null;
+    [key: `strMeasure${number}`]: string | null;
   }
+  
 
   export interface Category {
     idCategory: string;

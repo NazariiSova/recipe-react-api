@@ -23,8 +23,6 @@ const Header: React.FC = () => {
             All Recipes
           </Link>
           <Link to="/selected">Selected Recipes</Link>
-          <Link to="/recipe/demo-id">Single Recipe</Link> 
-
         </div>
         <SearchBar />
       </nav>

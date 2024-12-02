@@ -2,68 +2,54 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRecipeById } from "../services/api";
-import { Recipe } from "../types/Recipe";
 
-const SingleRecipe = () => {
+const SingleRecipePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  
-  const { data: recipe, isLoading, isError } = useQuery<Recipe | null>({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["recipe", id],
     queryFn: () => fetchRecipeById(id!),
-    enabled: !!id, 
+    enabled: !!id,
   });
 
   if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Failed to load the recipe</p>;
-  if (!recipe) return <p>Recipe not found</p>;
+  if (isError || !data) return <p>Failed to load recipe</p>;
 
-  const ingredients = Array.from({ length: 20 })
-    .map((_, i) => {
-      const ingredient = recipe[`strIngredient${i + 1}` as keyof Recipe] as string | null;
-      const measure = recipe[`strMeasure${i + 1}` as keyof Recipe] as string | null;
-      return ingredient ? `${ingredient} - ${measure || ''}`.trim() : null;
-    })
-    .filter(Boolean);
+  const ingredients = Array.from({ length: 20 }, (_, i) => ({
+    ingredient: data[`strIngredient${i + 1}` as keyof typeof data],
+    measure: data[`strMeasure${i + 1}` as keyof typeof data],
+  })).filter(({ ingredient }) => ingredient); 
 
   return (
-    <div className="single-recipe-container">
-      <h1>{recipe.strMeal}</h1>
-      <div className="recipe-image-container">
-        <img 
-          src={recipe.strMealThumb} 
-          alt={recipe.strMeal} 
-          className="recipe-image"
-        />
-      </div>
-      <div className="recipe-details">
-        <p><strong>Category:</strong> {recipe.strCategory}</p>
-        <p><strong>Area:</strong> {recipe.strArea}</p>
-        
-        <h2>Ingredients:</h2>
-        <ul className="ingredients-list">
-          {ingredients.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-        
-        <h2>Instructions:</h2>
-        <p className="instructions">{recipe.strInstructions}</p>
-        
-        {recipe.strYoutube && (
-          <div className="youtube-link">
-            <h3>Video:</h3>
-            <a 
-              href={recipe.strYoutube || undefined} 
-              target="_blank" 
-              rel="noopener noreferrer"
-            >
-              Watch on YouTube
-            </a>
-          </div>
-        )}
-      </div>
+    <div>
+      <h1>{data.strMeal}</h1>
+      <img src={data.strMealThumb} alt={data.strMeal} />
+      <p>
+        <strong>Category:</strong> {data.strCategory}
+      </p>
+      <p>
+        <strong>Country:</strong> {data.strArea}
+      </p>
+      <p>
+        <strong>Instructions:</strong> {data.strInstructions}
+      </p>
+      {data.strYoutube && (
+        <p>
+          <strong>Video Tutorial:</strong>{" "}
+          <a href={data.strYoutube} target="_blank" rel="noopener noreferrer">
+            Watch on YouTube
+          </a>
+        </p>
+      )}
+      <h2>Ingredients</h2>
+      <ul>
+        {ingredients.map(({ ingredient, measure }, index) => (
+          <li key={index}>
+            {ingredient} - {measure}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
 
-export default SingleRecipe;
+export default SingleRecipePage;

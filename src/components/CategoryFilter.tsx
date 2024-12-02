@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getCategories } from "../services/api";
+import { fetchCategories } from "../services/api";
 
 interface Category {
   strCategory: string;
@@ -17,11 +17,15 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      const categories = await getCategories();
-      setCategories(categories);
+    const loadCategories = async () => {
+      try {
+        const categoriesData = await fetchCategories();
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
     };
-    fetchCategories();
+    loadCategories();
   }, []);
 
   return (

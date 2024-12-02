@@ -1,83 +1,53 @@
 import React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Recipe } from "../types/Recipe";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface RecipeCardProps {
-  id: string;
-  name: string;
-  category: string;
-  area: string;
-  image: string;
-  isSelected?: boolean;
+  idMeal: string;
+  strMeal: string;
+  strCategory: string;
+  strArea: string;
+  strMealThumb: string;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ 
-  id, 
-  name, 
-  category, 
-  area, 
-  image,
-  isSelected = false
-}) => {
+const RecipeCard: React.FC<RecipeCardProps> = ({ idMeal, strMeal, strCategory, strArea, strMealThumb }) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  const selectRecipeMutation = useMutation({
-    mutationFn: async (recipe: Recipe) => {
-      try {
-        await axios.post('/api/select-recipe', recipe);
-        return recipe;
-      } catch (error) {
-        throw new Error('Failed to select recipe');
-      }
+  const mutation = useMutation({
+    mutationFn: async (recipe: RecipeCardProps) => {
+      const previousSelectedRecipes = queryClient.getQueryData<RecipeCardProps[]>(["selectedRecipes"]) || [];
+      queryClient.setQueryData(["selectedRecipes"], [...previousSelectedRecipes, recipe]);
     },
-    onMutate: async (newRecipe) => {
-      await queryClient.cancelQueries({ queryKey: ['selectedRecipes'] });
-      
-      const previousSelectedRecipes = queryClient.getQueryData(['selectedRecipes']) as Recipe[];
-      
-      queryClient.setQueryData(['selectedRecipes'], (oldRecipes: Recipe[] = []) => {
-        const isAlreadySelected = oldRecipes.some(r => r.idMeal === newRecipe.idMeal);
-        
-        if (isAlreadySelected) {
-          return oldRecipes.filter(r => r.idMeal !== newRecipe.idMeal);
-        } else {
-          return [...oldRecipes, { ...newRecipe, isSelected: true }];
-        }
-      });
-
-      return { previousSelectedRecipes };
-    },
-    onError: (err, newRecipe, context) => {
-      queryClient.setQueryData(['selectedRecipes'], (context as any)?.previousSelectedRecipes);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['selectedRecipes'] });
-    }
   });
 
-  const handleSelectRecipe = () => {
-    selectRecipeMutation.mutate({
-      idMeal: id,
-      strMeal: name,
-      strCategory: category,
-      strArea: area,
-      strMealThumb: image,
-      isSelected: true
+  const handleSelect = (e: React.MouseEvent) => {
+    e.stopPropagation(); 
+    mutation.mutate({
+      idMeal,
+      strMeal,
+      strCategory,
+      strArea,
+      strMealThumb,
     });
   };
 
+  const handleViewRecipe = () => {
+    navigate(`/recipe/${idMeal}`);
+  };
+
   return (
-    <div className={`recipe-card ${isSelected ? 'selected' : ''}`}>
-      <img src={image} alt={name} />
-      <h2>{name}</h2>
-      <p><strong>Category:</strong> {category}</p>
-      <p><strong>Area:</strong> {area}</p>
-      <button 
-        onClick={handleSelectRecipe}
-        className={`select-button ${isSelected ? 'selected' : ''}`}
-      >
-        {isSelected ? 'Deselect' : 'Select'}
+    <div className="recipe-card" onClick={handleViewRecipe} style={{ cursor: "pointer" }}>
+      <img src={strMealThumb} alt={strMeal} />
+      <h2>{strMeal}</h2>
+      <p>
+        <strong>Category:</strong> {strCategory}
+      </p>
+      <p>
+        <strong>Area:</strong> {strArea}
+      </p>
+      <button onClick={handleSelect} onMouseDown={(e) => e.stopPropagation()}>
+        Select Recipe
       </button>
     </div>
   );
