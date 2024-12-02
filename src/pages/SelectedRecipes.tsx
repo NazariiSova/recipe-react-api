@@ -2,7 +2,6 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Recipe } from "../types/Recipe";
 
-// Функція для отримання обраних рецептів
 const fetchSelectedRecipes = async (): Promise<Recipe[]> => {
   const response = await fetch("/api/selectedRecipes");
   if (!response.ok) {

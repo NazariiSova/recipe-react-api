@@ -1,9 +1,9 @@
-import React from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import AllRecipesPage from './pages/AllRecipes';
-import SelectedRecipesPage from './pages/SelectedRecipes';
-import SingleRecipePage from './pages/SingleRecipe';
+import React from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import AllRecipesPage from "./pages/AllRecipes";
+import SelectedRecipesPage from "./pages/SelectedRecipes";
+import SingleRecipePage from "./pages/SingleRecipe";
 
 const App: React.FC = () => {
   const queryClient = new QueryClient();
@@ -14,6 +14,7 @@ const App: React.FC = () => {
         <nav>
           <Link to="/">All Recipes</Link>
           <Link to="/selected">Selected Recipes</Link>
+          <Link to="/recipe/demo-id">Single Recipe</Link> 
         </nav>
         <Routes>
           <Route path="/" element={<AllRecipesPage />} />

@@ -39,7 +39,6 @@ export interface Recipe {
     strMeasure15: string | null;
   }
   
-  // Тип для категорії
   export interface Category {
     idCategory: string;
     strCategory: string;
@@ -47,12 +46,10 @@ export interface Recipe {
     strCategoryDescription: string;
   }
   
-  // Тип для універсального списку
   export interface ListResponse<T> {
     meals: T[];
   }
   
-  // Типи відповідей API
   export interface SearchByNameResponse {
     meals: Recipe[];
   }
