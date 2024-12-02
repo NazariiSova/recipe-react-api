@@ -21,32 +21,47 @@ const SingleRecipe = () => {
     .map((_, i) => {
       const ingredient = recipe[`strIngredient${i + 1}` as keyof Recipe] as string | null;
       const measure = recipe[`strMeasure${i + 1}` as keyof Recipe] as string | null;
-      return ingredient ? `${ingredient} - ${measure}` : null;
+      return ingredient ? `${ingredient} - ${measure || ''}`.trim() : null;
     })
     .filter(Boolean);
 
   return (
-    <div>
+    <div className="single-recipe-container">
       <h1>{recipe.strMeal}</h1>
-      <img src={recipe.strMealThumb} alt={recipe.strMeal} />
-      <p><strong>Category:</strong> {recipe.strCategory}</p>
-      <p><strong>Area:</strong> {recipe.strArea}</p>
-      <h2>Ingredients:</h2>
-      <ul>
-        {ingredients.map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </ul>
-      <h2>Instructions:</h2>
-      <p>{recipe.strInstructions}</p>
-      {recipe.strYoutube && (
-        <div>
-          <h3>Video:</h3>
-          <a href={recipe.strYoutube} target="_blank" rel="noopener noreferrer">
-            Watch on YouTube
-          </a>
-        </div>
-      )}
+      <div className="recipe-image-container">
+        <img 
+          src={recipe.strMealThumb} 
+          alt={recipe.strMeal} 
+          className="recipe-image"
+        />
+      </div>
+      <div className="recipe-details">
+        <p><strong>Category:</strong> {recipe.strCategory}</p>
+        <p><strong>Area:</strong> {recipe.strArea}</p>
+        
+        <h2>Ingredients:</h2>
+        <ul className="ingredients-list">
+          {ingredients.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+        
+        <h2>Instructions:</h2>
+        <p className="instructions">{recipe.strInstructions}</p>
+        
+        {recipe.strYoutube && (
+          <div className="youtube-link">
+            <h3>Video:</h3>
+            <a 
+              href={recipe.strYoutube || undefined} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              Watch on YouTube
+            </a>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

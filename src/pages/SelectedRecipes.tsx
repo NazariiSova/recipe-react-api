@@ -1,53 +1,83 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Recipe } from "../types/Recipe";
+import axios from "axios";
 
 const fetchSelectedRecipes = async (): Promise<Recipe[]> => {
-  const response = await fetch("/api/selectedRecipes");
-  if (!response.ok) {
+  try {
+    const response = await axios.get("/api/selectedRecipes");
+    return response.data;
+  } catch (error) {
     throw new Error("Failed to fetch selected recipes");
   }
-  return response.json();
 };
 
 const SelectedRecipesPage: React.FC = () => {
-  const { data, isLoading, isError } = useQuery<Recipe[], Error>({
+  const { data: selectedRecipes, isLoading, isError } = useQuery<Recipe[], Error>({
     queryKey: ["selectedRecipes"],
     queryFn: fetchSelectedRecipes,
     initialData: [],
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Failed to load selected recipes</p>;
+  const combinedIngredients = React.useMemo(() => {
+    const ingredientsMap: Record<string, string> = {};
 
-  const combinedIngredients = (data ?? []).reduce<Record<string, string>>((acc, recipe) => {
-    Array.from({ length: 20 }).forEach((_, i) => {
-      const ingredient = recipe[`strIngredient${i + 1}` as keyof Recipe] as string | null;
-      const measure = recipe[`strMeasure${i + 1}` as keyof Recipe] as string | null;
-      if (ingredient) acc[ingredient] = measure || "";
+    selectedRecipes.forEach((recipe) => {
+      for (let i = 1; i <= 20; i++) {
+        const ingredientKey = `strIngredient${i}` as keyof Recipe;
+        const measureKey = `strMeasure${i}` as keyof Recipe;
+
+        const ingredient = recipe[ingredientKey] as string;
+        const measure = recipe[measureKey] as string;
+
+        if (ingredient && ingredient.trim() !== '') {
+          if (ingredientsMap[ingredient]) {
+            ingredientsMap[ingredient] += `, ${measure || ''}`;
+          } else {
+            ingredientsMap[ingredient] = measure || '';
+          }
+        }
+      }
     });
-    return acc;
-  }, {});
+
+    return ingredientsMap;
+  }, [selectedRecipes]);
+
+  if (isLoading) return <p>Loading selected recipes...</p>;
+  if (isError) return <p>Error loading selected recipes</p>;
+  if (selectedRecipes.length === 0) return <p>No recipes selected</p>;
 
   return (
-    <div>
+    <div className="selected-recipes-container">
       <h1>Selected Recipes</h1>
-      <ul>
-        {data.map((recipe) => (
-          <li key={recipe.idMeal}>
-            <h2>{recipe.strMeal}</h2>
-            <img src={recipe.strMealThumb} alt={recipe.strMeal} />
-          </li>
-        ))}
-      </ul>
-      <h2>Combined Ingredients:</h2>
-      <ul>
-        {Object.entries(combinedIngredients).map(([ingredient, measure]) => (
-          <li key={ingredient}>
-            {ingredient} - {measure}
-          </li>
-        ))}
-      </ul>
+      
+      <section className="selected-recipe-list">
+        <h2>Recipes</h2>
+        <div className="recipes-grid">
+          {selectedRecipes.map((recipe) => (
+            <div key={recipe.idMeal} className="selected-recipe-item">
+              <img 
+                src={recipe.strMealThumb} 
+                alt={recipe.strMeal} 
+                className="recipe-thumbnail"
+              />
+              <h3>{recipe.strMeal}</h3>
+              <p>Category: {recipe.strCategory}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="combined-ingredients">
+        <h2>Combined Ingredients</h2>
+        <ul>
+          {Object.entries(combinedIngredients).map(([ingredient, measure]) => (
+            <li key={ingredient}>
+              {ingredient} - {measure}
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 };
