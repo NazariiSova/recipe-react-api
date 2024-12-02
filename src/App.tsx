@@ -4,25 +4,22 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import AllRecipesPage from "./pages/AllRecipes";
 import SelectedRecipesPage from "./pages/SelectedRecipes";
 import SingleRecipePage from "./pages/SingleRecipe";
+import Header from "./components/Header";
 
 const App: React.FC = () => {
   const queryClient = new QueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <nav>
-          <Link to="/">All Recipes</Link>
-          <Link to="/selected">Selected Recipes</Link>
-          <Link to="/recipe/demo-id">Single Recipe</Link> 
-        </nav>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <Header />  
         <Routes>
           <Route path="/" element={<AllRecipesPage />} />
           <Route path="/recipe/:id" element={<SingleRecipePage />} />
           <Route path="/selected" element={<SelectedRecipesPage />} />
         </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 };
 

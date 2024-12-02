@@ -159,3 +159,36 @@
   margin: 10px 0;
 }
 
+header {
+  padding: 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #ccc;
+}
+
+header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header nav a {
+  text-decoration: none;
+  color: #007bff;
+  margin-right: 16px;
+}
+
+header nav a:hover {
+  text-decoration: underline;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 8px;
+  z-index: 1000;
+}
