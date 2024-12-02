@@ -1,26 +1,28 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import AllRecipesPage from './pages/AllRecipes';
+import SelectedRecipesPage from './pages/SelectedRecipes';
+import SingleRecipePage from './pages/SingleRecipe';
 
-function App() {
+const App: React.FC = () => {
+  const queryClient = new QueryClient();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <nav>
+          <Link to="/">All Recipes</Link>
+          <Link to="/selected">Selected Recipes</Link>
+        </nav>
+        <Routes>
+          <Route path="/" element={<AllRecipesPage />} />
+          <Route path="/recipe/:id" element={<SingleRecipePage />} />
+          <Route path="/selected" element={<SelectedRecipesPage />} />
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
-}
+};
 
 export default App;
