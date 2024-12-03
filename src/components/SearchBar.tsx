@@ -33,6 +33,9 @@ const SearchBar: React.FC = () => {
   };
 
   const handleResultClick = (id: string) => {
+    setSearchQuery("");
+    setSearchResults([]);
+
     navigate(`/recipe/${id}`);
   };
 
